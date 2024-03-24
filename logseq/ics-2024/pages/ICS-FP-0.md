@@ -1,0 +1,87 @@
+public:: true
+
+- ## 课程介绍
+	- 此处 ICS 一词指代的是 *Introduction to Computer Science*，即介绍计算机科学的课程。
+	- 课程介绍分为三部分，即本系列课程的背景、笔者对介绍计算机科学这一话题的看法，以及课程具体的内容大纲。
+	- > This book is dedicated, in respect and admiration, to the spirit that lives in the computer.
+		- *Structure and Interpretation of Computer Programs*, Harold Abelson and Gerald Jay Sussman with Julie Sussman, foreword by Alan J. Perlis
+		- #SICP
+- ### 背景
+	- 感谢 ____ 大学的同学能够邀请我编写这系列课程，在这里由于隐私原因不列出具体的人名。我希望这系列课程讲义可以作为一系列持续维护的博客存在于中文互联网，并且留下一些有趣或有深度的参考资料，供对计算机科学感兴趣者所用。
+	- > I think that it's extraordinarily important that we in computer science keep fun in computing. When it started out, it was an awful lot of fun. Of course, the paying customers got shafted every now and then, and after a while we began to take their complaints seriously. We began to feel as if we really were responsible for the successful, error-free perfect use of these machines. I don't think we are. I think we're responsible for stretching them, setting them off in new directions, and keeping fun in the house. I hope the field of computer science never loses its sense of fun. Above all, I hope we don't become missionaries. Don't feel as if you're Bible salesmen. The world has too many of those already. What you know about computing other people will learn. Don't feel as if the key to successful computing is only in your hands. What's in your hands, I think and hope, is intelligence: the ability to see the machine as more than when you were first led up to it, that you can make it more.
+		- Alan J. Perlis
+		- #SICP
+	- 这系列课程旨在对下列话题做一些介绍：
+		- 如何构建可复现（reproducible）的系统：善事利器。不仅可以配置更好的日常系统用于日常的计算机科学探索旅程，还可以搭建可靠的、兼容性好的作业实验项目与团队软件工程项目。
+		- 函数式程序设计：介绍函数式程序设计中一些经典的优美理论，与函数式程序设计生态的现代最佳实践。
+- ### 笔者对介绍计算机科学这一话题的看法
+	- 国内的本科计算机科学课程往往围绕考研的核心课程展开（参见：硕士研究生 408 计算机学科考试大纲），即：
+		- 数据结构
+		- 计算机组成原理
+		- 操作系统
+		- 计算机网络
+	- 有关这些科目的参考资料浩如烟海，而我们在这里所讨论的话题可能与常规介绍计算机科学的课程所谈论的内容不同。但它们绝不是对经典内容中困难部分的逃避，也不是错误使用还原论所堆砌出的抽象废话。作为计算机科学系的第一门课程，对计算机科学的介绍应该注重
+		- 能提升今后日常学习与工程开发中生活质量的技能；并且介绍
+		- 一些在考研核心课程之外的，计算机科学的有趣内容。
+	- > 当然, 真正伟大的理论可以超越时代, 光芒恒在. 如何以现代形式来撷取精华, 去其枝蔓而无损它们本有的辉煌? 这是笔者自期的目标. 一步到位显然是不切实际的, 是以本书对某些主题将以经典或者 “半经典” 的观点来料理.
+		- 《代数学方法 卷一：基础架构》，李文威
+		- https://wwli.asia/index.php/zh/books-item-zh
+	- 介绍性材料的组织和选材往往与执笔者的兴趣和经历有关。[笔者](https://github.com/alissa-tung)是一名计算机科学专业的大四学生，研究兴趣是拓展交互式定理证明器的表达能力与性能优化的边界，以及有关代数拓扑的非形式化数学计算；此外，还是一名前工业界函数式程序员。在行文组织与材料选择中或许可以看到一些有关个人的痕迹。笔者在本科时期热心于在基础课程中宣传推广教学与实践的新方法，例如：
+		- 在课程中推广、宣传与答疑现代开源软件工具链的使用
+		- 让小组项目协作过程变得规范化，课程作业可复现
+		- 在有软件工程元素的课程中推广 Linux 操作系统与版本控制工具
+		- 在操作系统系列课程中使用 Rust 程序设计语言和 RISC-V 架构
+		- 将编译原理系列课程重心从形式语言与自动机转移到一些简洁优美的 IR 优化方法上，并引入相对现代、易用的文法解析方法
+		- 在数据库课程中推广容器化、基于测试的反馈驱动开发与有关分布式的内容
+	- 等。希望现在所编写的这些文本能够为 ICS 这一课程提供一些可参考的内容。
+- ### 内容
+	- 内容主要由中文编写，部分内容可能会先使用英语编写，以便于收集评论和反馈。
+	- 欢迎指正文本中的错误与提出建议或意见。
+		- alissa-tung<at>outlook<dot>com
+	- 课程的大纲目前只有草稿，将在具体的讲义编写后修改并确定。
+	- 草稿如下：
+		- 善事利器 1
+			- Nix 总述与生态现状
+			- Nix 安装和镜像介绍
+			- 使用 Nix 配置系统环境：NixOS、NixOS WSL、Nix Darwin、Nix system manager 介绍
+			- 使用 Nix 创建协同开发环境：Nix develop shell 与 CI/CD 生态介绍
+			- Nix 打包和 override 包介绍
+			- Nix flakes 介绍
+			- 「语法树 - 解释器」设计模式
+		- 善事利器 2
+			- 使用 Nix 搭建 Haskell、Rust、Agda 开发环境
+			- Haskell 生态介绍和实践
+			- Haskell 语法与基础的例子
+		- monad
+			- Haskell 中的列表
+			- 高阶函数与 recursion schemes
+			- 错误处理、状态传递、语法解析
+			- monad comprehensions
+			- input output
+			- mtl
+		- web server
+			- command line options parsing
+			- bare HTTP server and client
+			- Aeson and RESTful API
+			- Yesod and Servant
+			- writing test suites
+			- async and actor model
+		- parsing
+			- design patterns for parser combinators
+			- implement a (simply) typed lambda calculus
+				- HOAS
+				- closure
+				- typing
+		- propositions as types
+			- Starting at the Beginning: The Natural Numbers
+			- playing with lists, revised
+			- type-driven development
+		- free monads
+			- expression problem
+			- attempt to solve the problem
+			- lift out the encoding pattern
+	- [[ICS-FP]]
+- ### 此外
+	- > Finally, a note about ‘we’ in this book: ‘we’ will almost always mean
+	  the reader and the authors together, not the authors alone.
+		- *Lambda-Calculus and Combinators, an Introduction*, J. Roger Hindley, Jonathan P. Seldin

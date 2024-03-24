@@ -1,0 +1,612 @@
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{eucal}
+\usepackage{amsopn}
+\usepackage{minted}
+\usepackage{xeCJK}
+
+
+\usecolortheme{seahorse}
+
+\title{Introduction to Functional Programming}
+\author{Alissa Tung}
+\date{2 March 2024}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+This is an internal presentation version.
+Apologize for not listing all reference materials and contributions. I will mark all citations in future versions.
+\end{frame}
+
+\begin{frame}
+\tableofcontents[sectionstyle=show,subsectionstyle=show/shaded/hide,subsubsectionstyle=show/shaded/hide]
+\end{frame}
+
+\section{A Taste of Functional Programming}
+
+\begin{frame}[fragile]{\ldots from the famous \url{Haskell.org} Website}
+\begin{minted}{haskell}
+primes = filterPrime [2 ..]
+  where
+    filterPrime (p : xs) =
+      p : filterPrime [x | x <- xs, x `mod` p /= 0]
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{\ldots from the famous \url{Haskell.org} Website}
+
+由所有素数所构成的列表可以被表示为
+
+\begin{minted}{haskell}
+primes = filterPrime [2 ..]
+  where
+    filterPrime (p : xs) =
+      p : filterPrime [x | x <- xs, x `mod` p /= 0]
+\end{minted}
+
+\begin{enumerate}
+\item 考虑全体大于或等于 2 的整数所构成的列表
+\pause\item 这一列表可以被解构为列表的头元素（此时是 2）和列表去掉头元素剩下的部分，分别记作 $p$ 和 $xs$
+\pause\item 由于列表有序，从 $xs$ 中筛去所有 $p$ 的倍数所构成的新列表仍然有序。重复这一过程，每次得到的新的列表头元素都保证不是比它小的素数的倍数，并且是列表的最小元素。考虑素数的定义，它即是比 $p$ 大的最小素数
+\pause\item 将每次列表解构出的列表头所组合而成的新列表即是由所有素数所构成的列表
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]{\ldots from the famous \url{Haskell.org} Website}
+\begin{minted}{haskell}
+primes = filterPrime [2 ..]
+  where
+    filterPrime (p : xs) =
+      p : filterPrime [x | x <- xs, x `mod` p /= 0]
+\end{minted}
+
+\begin{itemize}
+\item 记号 {\tt [2 ..]} 代表由所有大于或等于 2 的整数所构成的列表
+\pause\item 记号 {\tt [x | x <- xs, x `mod` p /= 0]} 用类似集合论中 $\{x \mid x \in xs, x\bmod p \neq 0\}$ 的语法表示，从列表 {\tt xs} 中筛去所有模 $p$ 余数等于 0 的元素所构成的列表
+\pause\item 中缀二元算符 {\tt (:)} 的左侧是一个整数，右侧是一个整数构成的列表；该算符用于解构或构造整数构成的列表
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{The Essence of Functional Programming}
+\begin{itemize}
+    \item Declarative
+    \item Purely Functional
+    \item Composable
+    \item Higher-Order Functions
+    \item Referential Transparency
+    \item \ldots
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{The Essence of Functional Programming: Declarative}
+Haskell 允许程序员使用声明式的语言来
+\begin{itemize}
+    \item 解决许多现实世界的编程问题
+    \item 定义并计算数学上的概念
+\end{itemize}
+
+之所以能实现这一效果的关键是
+\begin{itemize}
+    \item Haskell 支持使用递归的等式\footnotemark 来定义变元
+    \item Haskell 是惰性求值的：一个变元只有在被需要时才会求值到具体的结果
+\end{itemize}
+\begin{minted}{haskell}
+fib 0 = 0
+fib 1 = 1
+fib n = fib (n - 1) + fib (n - 2)
+\end{minted}
+
+\footnotetext[1]{\url{https://www.joachim-breitner.de/publications/rec-def-pearl.pdf}}
+\end{frame}
+
+\begin{frame}[fragile]{The Essence of Functional Programming: Purely Functional}
+在 Haskell 中，所有函数都是数学意义上的纯函数：
+\begin{itemize}
+    \item 没有可变变元与赋值
+    \item 没有副作用
+    \item 没有循环、提前返回等命令式语言的常见控制流原语
+\end{itemize}
+\begin{minted}{haskell}
+quicksort :: (Ord a) => [a] -> [a]
+quicksort [] = []
+quicksort (x : xs) =
+  (quicksort lesser) ++ [x] ++ (quicksort greater)
+    where
+      lesser  = filter (<  x) xs
+      greater = filter (>= x) xs
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Composable, Higher-Order Functions and Referential Transparency}
+考虑类型 $A$、$B$，由 $A$ 元素所构成列表的类型记作 $[A]$。对于函数 $f : A \to B$，怎样将它从应用到一个类型为 $A$ 的值 $x$，转换为应用到整个列表上？
+\pause
+\begin{minted}{haskell}
+fs :: [a] -> [b]
+fs []       = []
+fs (x : xs) = f x : fs xs
+\end{minted}
+\pause
+\begin{minted}{haskell}
+g :: b -> c
+gs :: [b] -> [c]
+gs []       = []
+gs (x : xs) = g x : gs xs
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Composable, Higher-Order Functions and Referential Transparency}
+Higher-Order Functions：此时可以将公共模式提取出
+\begin{minted}{haskell}
+map :: (a -> b) -> ([a] -> [b])
+map f []       = []
+map f (x : xs) = f x : map f xs
+
+fs :: [a] -> [b]
+fs = map f
+
+gs :: [b] -> [c]
+gs = map g
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Composable, Higher-Order Functions and Referential Transparency}
+Composable：可以通过函数组合构造新的函数
+\begin{minted}{haskell}
+hs :: [a] -> [c]
+hs xs = gs (fs xs)
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Composable, Higher-Order Functions and Referential Transparency}
+Composable：可以通过函数组合构造新的函数
+\begin{minted}{haskell}
+hs :: [a] -> [c]
+-- hs xs = gs (fs xs)
+hs = gs . fs
+-- hs = map (g . f)
+
+-- point-free style
+foldl = flip . flip foldr id . (flip (.) .) . flip
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Composable, Higher-Order Functions and Referential Transparency}
+Referential Transparency：
+\begin{quote}
+    \ldots One of the most useful properties of expressions is that called by Quine referential transparency. In essence this means that if we wish to find the value of an expression which contains a sub-expression, the only thing we need to know about the sub-expression is its value. Any other features of the sub-expression, such as its internal structure, the number and nature of its components, the order in which they are evaluated or the colour of the ink in which they are written, are irrelevant to the value of the main expression.
+\end{quote}
+\end{frame}
+
+\begin{frame}[fragile]{Is Purely Functional Programming Languages as Expressive as Other Programming Languages}
+
+Yes, and even more expressive without ruining its purity.
+
+\begin{itemize}
+\item whenever you need a mutable variable to represent a mutable state, you may actually need a recursion
+\begin{itemize}
+    \pause\item \begin{minted}{haskell}
+sum :: [Int] -> Int
+sum []       = 0
+sum (x : xs) = x + sum xs
+    \end{minted}
+    \pause\item {\tt gen\_server} of Erlang/OTP
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Is Purely Functional Programming Languages as Expressive as Other Programming Languages}
+
+Yes, and even more expressive without ruining its purity.
+
+\begin{itemize}
+\item even side-effecting IO operations are but a description of what to do, produced by pure code
+\begin{itemize}
+    \pause\item 类型系统确保了产生值的代码与产生带有副作用的函数不能错误地混用，指导用户使用产生副作用的函数来结合产生值的代码，从而构建新的描述副作用的函数
+    \pause\item 由于这些函数也是纯函数式程序设计的一部分，纯函数式的一切优点仍然得到了保留：引用透明性、可组合等
+    \pause\item \begin{minted}{haskell}
+main = do
+  putStrLn "Hello, what is your name?"
+  name <- getLine
+  putStrLn ("Hello, " <> name <> "!")
+    \end{minted}
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Is Purely Functional Programming Languages as Expressive as Other Programming Languages}
+Yes, and even more expressive with simple language builtin constructions.
+    \begin{itemize}
+        \item inductively define data types and recursively define functions is all you need
+\begin{itemize}
+\pause\item\begin{minted}{haskell}
+data Tm
+  = Var Name
+  | Lam Name Tm
+  | App Tm Tm
+  | Let Name Tm Tm
+\end{minted}
+\pause\item\begin{minted}{haskell}
+eval :: Env -> Tm -> Val
+eval env = \case
+  Var x -> fromJust $ lookup x env
+  App t u -> eval env t $$ eval env u
+  Lam x t -> VLam x (\u -> eval ((x, u) : env) t)
+  Let x t u -> eval ((x, eval env t) : env) u
+\end{minted}
+\end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Is Purely Functional Programming Languages as Expressive as Other Programming Languages}
+
+Yes, and even more expressive with beautiful abstractions.
+
+\begin{itemize}
+    \item 在函数式程序设计的发展历史上，出现过许多优美的设计模式与实用的抽象框架，它们往往被称为 Functional Pearls
+\begin{itemize}
+\pause\item Recursion Schemes 总结了常见的递归模式、怎样用简洁的方式来编写可靠且高效的递归程序、以及探究它们性质的方法
+\pause\item Free Monad 提供了解决表达式问题的一个思路，并且用类型系统与范畴论的性质指导了程序的编写，减轻了函数库作者和函数库用户的心智负担
+\pause\item Algebraic Effects 提供了对用户友好的系统化组织代码中副作用范围和粒度的方法，并且结合代数与形式语义方法确保了这一设计模式的正确与高效
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Is Purely Functional Programming Languages as Expressive as Other Programming Languages}
+
+Yes, and even more expressive while easier to write safer code.
+\begin{itemize}
+    \pause\item Free Theorems 和其他文献指出，类型系统与语言的形式语义都确保了程序一定程度上的正确性；这也是程序设计语言理论与类型论中常见的研究方法
+    \pause\item 在 Haskell 等函数式语言中，更容易编写完善且易用的测试框架、无锁数据结构与无锁程序等其他语言中容易出错的大型工程
+    \pause\item 不同类型系统的变体与不同表达程度的类型驱动开发很大程度上减轻了函数式语言使用者的心智负担
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Advanced Functional Programming Languages}
+\begin{itemize}
+\item Statically Typed
+\item Type Inference
+\item Concurrent
+\item Modular
+\item Meta-Programming
+\item Proof-Carrying
+\item \ldots
+\end{itemize}
+\end{frame}
+
+\section{The History of Functional Programming Languages}
+
+\begin{frame}[fragile]{The History of Functional Programming Languages}
+\begin{itemize}
+\item Lisp: Recursive Functions of Symbolic Expressions
+and Their Computation by Machine (1960)
+\begin{minted}{scheme}
+(define (make-product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        ((and (number? m1) (number? m2)) (* m1 m2))
+        (else (list '* m1 m2))))
+(deriv '(+ x 3) 'x)
+1
+(deriv '(* x y) 'x)
+y
+(deriv '(* (* x y) (+ x 3)) 'x)
+(+ (* x y) (* y (+ x 3)))
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{The History of Functional Programming Languages}
+\begin{itemize}\item
+The ML Family: a family of general-purpose functional programming languages (1973)
+\begin{itemize}
+    \item ML
+    \item SML
+    \item Caml (Categorical Abstract Machine Language)
+    \item OCaml (Objective Caml)
+    \item Coq
+    \item \ldots
+    \item\begin{minted}{ocaml}
+type ('a, 'e) telescope =
+  | TNil of 'e
+  | TCons of 'a * ('a, 'e) telescope Tm.bnd
+module Telescope (B : LocallyNameless.S) (E : LocallyNameless.S) :
+sig
+  include LocallyNameless.S with type t = (B.t, E.t) telescope
+  val bind : Name.t -> t -> t bnd
+  val unbind_with : Tm.tm Tm.cmd -> t bnd -> t
+  val unbind_all : Tm.tm Tm.cmd list -> t -> E.t
+end =
+struct
+  type t = (B.t, E.t) telescope
+    \end{minted}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{The History of Functional Programming Languages}
+\begin{itemize}\item
+The Miranda Family: a family of non-strict purely functional programming languages (1985)
+
+\begin{itemize}
+    \item Miranda
+    \item Haskell
+    \item Clean
+    \item Idris (strict)
+    \item Agda
+    \item \ldots
+\item \begin{minted}{haskell}
+quicksort :: (Ord a) => [a] -> [a]
+quicksort [] = []
+quicksort (x : xs) =
+  (quicksort lesser) ++ [x] ++ (quicksort greater)
+    where
+      lesser  = filter (<  x) xs
+      greater = filter (>= x) xs
+\end{minted}
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{The History of Functional Programming Languages}
+\begin{itemize}\item
+Erlang: Practical functional programming for a parallel world (1986)
+\begin{minted}{erlang}
+even(Numbers) ->
+    mapreduce(Numbers, fun(Number) -> Number rem 2 == 0 end).
+mapreduce(Numbers, Function) ->
+    Parent = self(),
+    [spawn(fun() -> Parent ! {Number, Function(Number)} end) || Number <- Numbers],
+    lists:flatten(
+        [
+            receive
+                {Number, true} -> Number;
+                _ -> []
+            end
+         || Number <- Numbers
+        ]
+    ).
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\section{The Curry-Howard Correspondence}
+
+\begin{frame}{The Curry-Howard Correspondence}
+\begin{itemize}
+    \item propositions as types\footnote{{\url{https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf}}}
+    \item proofs as programs
+    \item simplification of proofs as evaluation of programs
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Dependent Sum Types}
+\begin{itemize}
+    \item given $A : \mathcal U$, and $B : A \to \mathcal U$, we can
+    form a type $\Sigma (x : A), B(x)$
+    \item $\Sigma (n : \mathbb N), x + 2 = 8$
+    \item $(6, \operatorname{refl})$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Coproduct Types}
+\begin{itemize}
+    \item given $A : \mathcal U$ and $B : \mathcal U$, we can form a type $A + B$
+    \item for $x : A$, constructor $\operatorname{inl} : A \to A + B$
+    \item for $y : B$, constructor $\operatorname{inr} : B \to A + B$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Curry-Howard Correspondence}
+\begin{itemize}
+    \item general mathematical theorem proving: dependent types - intuitionistic logic
+    \item message-passing open programs following certain protocols: session types - linear logic
+    \item \ldots
+\end{itemize}
+\end{frame}
+
+\section{Nix and NixOS}
+
+\begin{frame}{Nix and NixOS}
+
+Nix 是一个纯函数式、声明式的软件包管理器与构建工具。\\
+Nix 语言是一门纯函数式、惰性求值的程序设计语言。\\
+NixOS 是一个声明式的 Linux 发行版。\\
+Nix 系列工具的目的是创建声明式的、可复现的构建和部署生态。\\
+
+有关 Nix 和 NixOS 的所有概念都可以被视作为构造 AST 和运行解释器。
+
+\end{frame}
+
+\begin{frame}{Nix Lang}
+在 Nix 语言中，所有对象都可以仅用两个概念表达：
+\begin{itemize}
+\item lambda
+\item attribute set
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: lambda}
+lambda 是用于表示函数抽象的方式
+\begin{minted}{nix}
+f = x : x + 1
+g = x : g : x + g
+h = {x, y} : x + y
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: attribute set}
+属性集是类似 JSON 的数据结构
+\begin{minted}{nix}
+{
+  x = "hello";
+  y = 123;
+}
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: Derivation}
+derivation 并不是某种特殊的语言机制，只是含有特定字段的属性集。
+
+Nix 所构建和管理的所有软件包都是 derivation。
+
+derivation 声明了一个软件包的
+
+\begin{itemize}
+  \item 有关这个软件包的元信息
+  \item 构建依赖（输入）
+  \item 构建步骤
+  \item 构建产物（输出）
+\end{itemize}
+
+除此之外，每个 derivation 还包含一些对这个 derivation 进行额外操作的辅助函数。
+
+要研究 derivation，只需要研究它
+
+\begin{itemize}
+  \item 是如何被创建的（构造 AST）
+  \item 是如何被使用的（运行解释器）
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: Derivation}
+\begin{minted}{shell}
+$ nix derivation show /nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv
+{
+  "/nix/store/z3hhlxbckx4g3n9sw91nnvlkjvyw754p-myname.drv": {
+    "outputs": {
+      "out": {
+        "path": "/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname"
+      }
+    },
+    "inputSrcs": [],
+    "inputDrvs": {},
+    "platform": "mysystem",
+    "builder": "mybuilder",
+    "args": [],
+    "env": {
+      "builder": "mybuilder",
+      "name": "myname",
+      "out": "/nix/store/40s0qmrfb45vlh6610rk29ym318dswdr-myname",
+      "system": "mysystem"
+    }
+  }
+}
+\end{minted}
+\end{frame}
+
+\begin{frame}{Nix Lang: Derivation}
+
+要创建一个 derivation，必要的元素只有
+
+\begin{itemize}
+  \item 有关这个软件包的基本元信息
+  \item 构建依赖（输入）
+  \item 构建步骤
+  \item 构建产物（输出）
+\end{itemize}
+
+而额外的辅助函数和额外的元信息则是可以用函数自动计算出的。
+
+但直接填写这一过程也是较为冗长的。Nix 提供了一些「返回值是 derivation」的函数，用于根据不同需求化简这一场景的复杂度。
+\end{frame}
+
+\begin{frame}{Nix Lang: Derivation}
+常见的软件包往往形如
+\begin{itemize}
+    \item 传统的 C++、GTK 项目：从 GitHub 获取源代码，使用 CMake 进行构建；需要用各种方法找到依赖
+    \item Python 项目，使用依赖清单声明依赖，调用 {\tt pip} 脚本进行构建
+    \item Rust 项目，使用 {\tt Cargo.toml} 做依赖管理，通过 {\tt cargo build} 进行构建
+    \item \ldots
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: Derivation}
+针对这些场景，Nix 提供的「返回值是 derivation」的函数有
+\begin{itemize}
+    \item {\tt stdenv.mkDerivation}
+    \item {\tt buildRustPackage}
+    \item {\tt dockerTools.buildImage}
+    \item \ldots
+\end{itemize}
+等许多 generic builder。
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: Derivation}
+针对这些场景，Nix 提供的「返回值是 derivation」的函数有
+\begin{itemize}
+    \item {\tt stdenv.mkDerivation}，下面是使用的例子。一个 Nix 文件包含且仅包含一个 Nix 表达式，这些文件有时也被称作 Nix module。
+
+\begin{minted}{nix}
+{
+  lib,
+  stdenv,
+  fetchzip,
+}:
+
+stdenv.mkDerivation {
+  pname = "hello";
+  version = "2.12.1";
+
+  src = fetchzip {
+    url = "https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz";
+    sha256 = "SHA256-somesha...";
+  };
+}
+        \end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: Derivation}
+类似 {\tt stdenv.mkDerivation} 的函数还可以接受一些参数作为声明软件包的依赖，如
+\begin{minted}{nix}
+nativeBuildInputs = with pkgs;
+  [protobuf]
+  ++ (
+    if lib.strings.hasSuffix "-darwin" system
+    then [darwin.apple_sdk.frameworks.SystemConfiguration]
+    else [pkg-config]
+  );
+
+buildInputs = with pkgs; (
+  if lib.strings.hasSuffix "-darwin" system
+  then []
+  else [openssl]
+);
+\end{minted}
+此处 {\tt pkgs} 也是一个属性集，它有许多字段是 derivation。
+\end{frame}
+
+\begin{frame}[fragile]{Nix Lang: Derivation}
+构造完 derivation 后便可开始考虑如何使用一个 derivation，即用解释器去解释 derivation（AST）。
+
+\begin{itemize}
+    \item 注意到一个 derivation module 实际上是一个 lambda，解释器会填上规约 lambda 所需要提供的参数
+    \item {\tt nix eval} 会将 derivation 计算到唯一确定的 hash 值，对应 Nix store 中的一个路径，\\ 形如 {\tt /nix/store/5p0ffp6bzac6bpjg30cjsw9dg7y6fxw4-ghc-9.4.8}
+    \item {\tt nix build} 会将 derivation 编译为具体的可执行的构建脚本，并执行构建操作
+    \item 求出的 Nix store path 实际上和磁盘上的存储位置是一一对应的，通过控制 {\tt installPhase} 可以手动控制 store path 中存储哪些内容；否则 Nix 的 builder function 会使用默认的存储 layout
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Other Forms of Derivations: NixOS}
+如果一个 derivation 的 outputs（即存储在 Nix store path 的内容）是 Linux 系统的所有文件（{\tt /etc, /bin}、所有软件），且有一个解释器负责配置并启动所有 {\tt systemd} 服务、环境变量、符号链接等内容。我们就得到了一个声明式的 Linux 发行版，即 NixOS。
+\end{frame}
+
+\begin{frame}[fragile]{Other Forms of Derivations: Nix develop shell}
+如果一个 derivation 的 outputs（即存储在 Nix store path 的内容）是项目开发的所有依赖、环境变量、定制 shell 脚本等内容，且有一个解释器负责配置初始化脚本、环境变量、符号链接等内容。我们就得到了一个声明式的开发环境，并且带有所有需要的依赖。
+\end{frame}
+
+\end{document}

@@ -1,0 +1,15 @@
+on: [push]
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: logseq/publish-spa@main
+        with:
+          graph-directory: ./logseq/ics-2024
+      - run: touch $GITHUB_WORKSPACE/www/.nojekyll
+      - uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: ./logseq/ics-2024/www
